@@ -1,10 +1,12 @@
 
 var SimulatedAnnealing = (function () {
 	var tMax = 20;
-	var fTarget = 0.8;
+	var fTarget = 0.5;
 	var nNodes = 5;
 	var dT = 2;
 	var game = PuzzleGame;
+	
+	var iterations = 0;
 	
 	return {
 		/*
@@ -40,7 +42,10 @@ var SimulatedAnnealing = (function () {
 			
 			// Run through this loop as long a node doesn't reach the target
 			var currentValue;
-		    while (true) {
+			
+			iterations = 0;
+		    while (iterations < 10000) {
+				iterations++;
 				// Calculate the value
 				currentValue = game.F(P);
 				
@@ -51,7 +56,7 @@ var SimulatedAnnealing = (function () {
 				}
 			
 				// Generate neighbouring nodes
-				var nodes = game.generateNeighbours(P, nNodes, T);
+				var nodes = game.generateNeighbors(P, nNodes, T);
 				
 				// Find the best neighbour
 				var pMax = 0;
@@ -59,7 +64,7 @@ var SimulatedAnnealing = (function () {
 				var val;
 				for(var n in nodes) {
 					val = game.F(nodes[n]);
-					if (currVal > pMax) {
+					if (val > pMax) {
 						index = n;
 						pMax = val;
 					}
@@ -67,7 +72,7 @@ var SimulatedAnnealing = (function () {
 				
 				// Calculate q and p
 				var q = (pMax - currentValue) / currentValue;
-				var p = Math.min(1, Math.exp((-q)/t));
+				var p = Math.min(1, Math.exp((-q)/T));
 				
 				// If a random numbers is bigger than p,
 				// set best neighbour to be current P
@@ -79,13 +84,12 @@ var SimulatedAnnealing = (function () {
 				}
 				
 				// Decrease the temperature
-				T -= dt;
+				T -= dT;
 				
 			}
-			return P;
-			
-			
-		}
+		},
+		
+		numIter: function() {return iterations; }
 	};
 	
 	

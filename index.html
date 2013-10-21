@@ -3,6 +3,34 @@
 <head>
 <script src="js/game.js"></script>
 <script src="js/simulated-annealing.js"></script>
+<script>
+
+var printMap = function (map) {
+	var xBoarder = " --"
+	for (var i = 0; i < map[0].length; i++) {
+		xBoarder += '---';
+	}
+    console.log(xBoarder);
+    var row;
+    for (var y = 0; y < map.length; y++) {
+        row = '|  ';
+        for (var x = 0; x < map.length; x++) {
+            row += map[y][x] + '  '
+        }
+        console.log(row + '|')
+    }
+    console.log(xBoarder);
+}
+
+var game = PuzzleGame;
+game.start(5, 5, 2);
+var start = game.generateRandom();
+
+var solver = SimulatedAnnealing;
+var solution = solver.search(start);
+printMap(solution);
+console.log(solver.numIter());
+</script>
 <title>Simulated Annealing</title>
 </head>
 <body>
