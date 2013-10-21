@@ -2,32 +2,23 @@ var PuzzleGame = (function() {
 	var N;
 	var M;
 	var K;
-	
-	var maxScore;
-	var defaultTemp = 0.1;
-	
-	var genIndexes = function(tamperAmount) {
-		var arr = new Array();
-		var val;
-		while (arr.length < tamperAmount) {
-			val = Math.floor(Math.random()*(N*M));
-			if (arr.indexOf(val) === -1) {
-				arr.push(val);
-			}
-		}
-		return arr;
-	}
 
+	var switchIndexes = function(curNode, x1, x2, y1, y2) {
+		var temp = curNode[y1][x1];
+		curNode[y1][x1] = curNode[y2][x2];
+		curNode[y2][x2] = temp;
+	}
+	
 	return{
 		start: function(rows, columns, eggs){
 			N=rows;
 			M=columns;
 			K=eggs;
-			maxScore=Math.min(N, M)*K;
 		},
 		F: function(board){
-			var score=maxScore;
-
+			
+			var errors=0;
+			
 			//CHECKS ROWS
 			for(var i=0; i<board.length; i++){
 				var countXdir=0;
@@ -36,7 +27,7 @@ var PuzzleGame = (function() {
 						countXdir++;
 				}
 				if(countXdir>K)
-					score-=(countXdir-K);
+					errors+=(countXdir-K);
 			}
 
 			//CHECKS COLUMNS
@@ -48,61 +39,66 @@ var PuzzleGame = (function() {
 					}
 				}
 				if(countYdir>K)
-					score-=(countYdir-K);
+					errors+=(countYdir-K);
 			}
 			
 			//CHECKS DIAGONALS top-left --> bottom right
-			for(var x=0; x<N; x++){
+			for(var y=0; y<M; y++){
 				var countD=0;
-				for(var y=0; y<M-x; y++){
-					if(board[x+y][y]==1)
+				for(var x=0; x<N-y; x++){
+					// console.log('x: ' + (x+y) + ', y: ' + (x));
+					if(board[x][x+y]==1)
 						countD++;
 				}
 				if(countD>K)
-					score-=(countD-K);
+					errors+=(countD-K);
 			}
 			
-			for(var x=1; x<M; x++){
+			for(var x=1; x<N; x++){
 				var countD=0; 
-				for(var y=0; y<N-x; y++){
-					if(board[x+y][y]==1)
+				for(var y=0; y<M-x; y++){
+					if(board[y+x][y]==1)
 						countD++;
 				}
 				if(countD>K)
-					score-=(countD-K);
+					errors+=(countD-K);
 			}
-
 
 
 			//CHECKS DIAGONALS top-right --> bottom left
 			for(var x=0; x<N; x++){
 				var countD=0;
 
-				for(var y=0; y<N-x; y++){
-					if(board[x+y][y]==1)
+				for(var y=0; y<=x; y++){
+					if(board[y][x-y]==1)
 						countD++;
 				}
 				if(countD>K)
-					score-=(countD-K);
+					errors+=(countD-K);
 			}
 			
-			for(var y=1; y<M; y++){
+			
+			for(var y=0; y<M; y++){
 				var countD=0;
-				for(var x=y; x<M; x++){
-					if(board[N-x][x]==1)
+				
+				for(var x=(N-1); x>y; x--){
+					
+					if(board[y+(N-x)][x]==1)
 						countD++;
 				}
 				if(countD>K)
-					score-=(countD-K);
+					errors+=(countD-K);
 			}
-					
-			return score/maxScore;
+			
+			return (errors == 0 ? 1 : 1/(errors/2+1));
 		},
 		
 		generateNeighbors: function(P, nNodes, t){
 			// Find out how much to tamper with the eggs
-			var tamperPercentage = defaultTemp * t;
-			var tamperAmount = Math.floor((M*N) * tamperPercentage);
+			var tamperAmount = Math.floor(t * (M*N));
+			
+			// Be sure that we at least make one change
+			if (tamperAmount < 1) tamperAmount = 1;
 			
 			// Generate "nNodes"-many nodes
 			var nodes = {};
@@ -110,23 +106,28 @@ var PuzzleGame = (function() {
 			for (var i = 0; i < nNodes; i++) {
 				curNode = deepCopy(P);
 				
-				// Generates a list of random values
-				var indexes = genIndexes(tamperAmount);
-				
-				console.log(indexes);
-				
-				// Change these indexes in the current node
-				var val, x, y;
-				for (var j = 0; j < indexes[0].length; j++) {
-					// Find the integer value and divide into x and y
-					val = indexes[j];
-					x = val%N;
-					y = Math.floor(val/M);
+				// Find new indexes according to the tamperAmount
+				var tamperedIndexes = 0, index, val, y, x1, x2;
+				while(tamperedIndexes < tamperAmount) {
+					// Selecting a random index
+					index = Math.floor(Math.random()*(N*M));
 					
-					// Change the value at the given index
-					val = curNode[y][x];
-					curNode[y][x] = Math.abs(val-1);
+					// Get the value for that index
+					x1 = index%N;
+					y = Math.floor(index/M);
+					val = curNode[y][x1];
 					
+					// Loop through untill we find an index that's 
+					// Not the same as the one found in index one
+					do {
+						x2 = Math.floor(Math.random() * N);
+					} while (curNode[y][x2] === val);
+					
+					// Found two positions to switch, now switch them
+					switchIndexes(curNode, x1, x2, y, y);
+					
+					// Increase the amount that has been tampered
+					tamperedIndexes++;
 				}
 				
 				// Store it in the nodes list

@@ -1,41 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="js/game.js"></script>
-<script src="js/simulated-annealing.js"></script>
-<script>
-
-var printMap = function (map) {
-	var xBoarder = " --"
-	for (var i = 0; i < map[0].length; i++) {
-		xBoarder += '---';
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="js/game.js"></script>
+	<script src="js/simulated-annealing.js"></script>
+	<style>
+	div#input-boxes {
+		width: 250px;
+		
 	}
-    console.log(xBoarder);
-    var row;
-    for (var y = 0; y < map.length; y++) {
-        row = '|  ';
-        for (var x = 0; x < map.length; x++) {
-            row += map[y][x] + '  '
-        }
-        console.log(row + '|')
-    }
-    console.log(xBoarder);
-}
+	
+	div#input-boxes input {
+		width: 50px;
+		margin: 10px;
+	}
+	
+	label {
+		
+		display: block;
+	}
+	
+	</style>
+	<script>
+	var renderSolution = function(solution) {
+		
+		
+		
+		
+	}
 
-var game = PuzzleGame;
-game.start(5, 5, 2);
-var start = game.generateRandom();
+	var game;
+	var solution;
+	
+	var $form;
+	
+	var $inTmax;
+	var $inTd;
+	var $inTarget;
+	var $inNodes;
+	
+	var $inM;
+	var $inN;
+	var $inK;
+	
+	$(document).ready(function() {
+		// Selecting game
+		game = PuzzleGame;
 
-var solver = SimulatedAnnealing;
-var solution = solver.search(start);
-printMap(solution);
-console.log(solver.numIter());
-</script>
+		// References to the page elements
+		$form = $('form');
+		$msg = $('#msg');
+		
+		// Reference to the input boxes
+		$inTmax = $('#tmax');
+		$inTd = $('#td');
+		$inTarget = $('#target');
+		$inNodes = $('#nodes');
+	
+		$inM = $('#m');
+		$inN = $('#n');
+		$inK = $('#k');
+		
+		// Register changes
+		$form.on('submit', function(e) {
+			e.preventDefault();
+			
+			// Validate each input
+			var valid = true;
+			$form.find('input:not(input[type=submit])').each(function() {
+				if (isNaN($(this).val())) {
+					$msg.get(0).innerHTML = 'Only write numeric values';
+					valid = false;
+				}
+			});
+			
+			if (valid) {
+				// Simulated annealing configurations
+				var tMax = $inTmax.val();
+				var td = $inTd.val();
+				var target = $inTarget.val();
+				var nodes = $inNodes.val();
+				
+				// Game configurations
+				var m = $inM.val();
+				var n = $inN.val();
+				var k = $inK.val();
+				
+				// Set up the game
+				game.start(m, n, k);
+				
+				// Generate start node
+				var start = game.generateRandom();
+				
+				// Configure simulated annealing
+				SimulatedAnnealing.configure(tMax, td, target, nodes, game);
+				
+				// Start solving
+				solution = SimulatedAnnealing.search(start);
+				
+				$msg.get(0).innerHTML = SimulatedAnnealing.numIter() + " iterations before finding a solution";
+			}	
+		});
+		
+	
+	
+	
+		
+	});
+		
+
+	</script>
 <title>Simulated Annealing</title>
 </head>
 <body>
+	<div id="input-boxes">
+		<form>
+			<h2>Simulated Annealing</h2>
+			<label>Max temperature: 		<input type="text" id="tmax" value="0.30" /></label>
+			<label>Temperature degradation: <input type="tex" id="td" value="0.00001" /></label>	
+			<label>Target value: 			<input type="text" id="target" value="1" /></label>
+			<label># of neighbors: 			<input type="number" id="nodes" value="30" /></label>
+			
+			<br />
+			<h2>Puzzle game</h2>
+			<label>M: <input type="number" id="m" value="5" /></label>
+			<label>N: <input type="number" id="n" value="5" /></label>
+			<label>K: <input type="number" id="k" value="2" /></label>
+			<br />
+			
+			<span id="msg"></span><br />
+			<input type="submit" name="submit" value="Run" />
+		</form>
+	</div>
 	
-	<!-- SKELETON -->
-	
+	<div id="solution">
+		<table></table>
+	</div>
 </body>
 </html>
