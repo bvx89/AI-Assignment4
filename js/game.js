@@ -95,7 +95,7 @@ var PuzzleGame = (function() {
 		
 		generateNeighbors: function(P, nNodes, t){
 			// Find out how much to tamper with the eggs
-			var tamperAmount = Math.floor(t / 10) * M * N;
+			var tamperAmount = Math.floor(t / 10 * M * N);
 			
 			// Be sure that we at least make one change
 			if (tamperAmount < 1) tamperAmount = 1;

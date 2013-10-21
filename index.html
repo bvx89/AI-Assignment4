@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<!-- Library-->
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	
+	<!-- The game used in the solution -->
 	<script src="js/game.js"></script>
+	
+	<!-- Generic Simulated Annealing object -->
 	<script src="js/simulated-annealing.js"></script>
 	<style>
 	div#input-boxes {
@@ -28,12 +33,15 @@
 	}
 	
 	.a {
-		color: blue;
-		font-weight: bold;
+		background: white;
+	}
+	
+	.b {
+		background: blue;
 	}
 	
 	tr, td {
-		padding: 10px;
+		padding: 20px;
 	}
 	
 	label {
@@ -51,7 +59,7 @@
 			$tr = $('<tr />');
 			for (var j = 0; j < solution[0].length; j++) {
 				var val = (solution[i][j]);
-				var string = '<td' + (val == 1 ? ' class="a" ': '') + '>' + val + '</td>';
+				var string = '<td class="' + (val == 1 ? 'b': 'a') + '">' + (val == 1 ? '&#9786;': '') + '</td>';
 				$td = $(string);
 				$tr.append($td);
 			}
@@ -156,8 +164,8 @@
 	<div id="input-boxes">
 		<form>
 			<h2>Simulated Annealing</h2>
-			<label>Max temperature: 		<input type="text" id="tmax" value="0.1" /></label>
-			<label>Temperature degradation: <input type="tex" id="td" value="0.01" /></label>	
+			<label>Max temperature: 		<input type="text" id="tmax" value="0.2" /></label>
+			<label>Temperature degradation: <input type="tex" id="td" value="0.001" /></label>	
 			<label>Target value: 			<input type="text" id="target" value="1" /></label>
 			<label># of neighbors: 			<input type="number" id="nodes" value="30" /></label>
 			

@@ -45,7 +45,7 @@ var SimulatedAnnealing = (function () {
 			var currentValue;
 			
 			iterations = 0;
-		    while (iterations < maxIterations) {
+		    while (T > 0) {
 				iterations++;
 				
 				// Calculate the value
