@@ -7,6 +7,7 @@ var SimulatedAnnealing = (function () {
 	var game = PuzzleGame;
 	
 	var iterations = 0;
+	var maxIterations = 5000;
 	
 	return {
 		/*
@@ -44,7 +45,7 @@ var SimulatedAnnealing = (function () {
 			var currentValue;
 			
 			iterations = 0;
-		    while (true) {
+		    while (iterations < maxIterations) {
 				iterations++;
 				
 				// Calculate the value
@@ -71,6 +72,7 @@ var SimulatedAnnealing = (function () {
 					}
 				}
 				
+				
 				// Calculate q and p
 				var q = (pMax - currentValue) / currentValue;
 				var p = Math.min(1, Math.exp((-q)/T));
@@ -88,7 +90,7 @@ var SimulatedAnnealing = (function () {
 				T -= dT;
 				
 			}
-			return P;
+			return false;
 		},
 		
 		numIter: function() {return iterations; }

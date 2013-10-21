@@ -7,12 +7,33 @@
 	<style>
 	div#input-boxes {
 		width: 250px;
+		float: left;
+		margin-right: 50px;
 		
 	}
 	
 	div#input-boxes input {
 		width: 50px;
 		margin: 10px;
+	}
+	
+	div#solution {
+		width: 200px;
+		margin: 0 auto;
+	}
+	
+	table, tr, td {
+		border: 1px solid black;
+		border-collapse:collapse;
+	}
+	
+	.a {
+		color: blue;
+		font-weight: bold;
+	}
+	
+	tr, td {
+		padding: 10px;
 	}
 	
 	label {
@@ -23,16 +44,28 @@
 	</style>
 	<script>
 	var renderSolution = function(solution) {
+		$solution.empty();
 		
+		$table = $('<table/>');
+		for (var i = 0; i < solution.length; i++) {
+			$tr = $('<tr />');
+			for (var j = 0; j < solution[0].length; j++) {
+				var val = (solution[i][j]);
+				var string = '<td' + (val == 1 ? ' class="a" ': '') + '>' + val + '</td>';
+				$td = $(string);
+				$tr.append($td);
+			}
+			$table.append($tr);
+		}	
 		
-		
-		
+		$solution.append($table);
 	}
 
 	var game;
 	var solution;
 	
-	var $form;
+	var $solution;
+	var $table
 	
 	var $inTmax;
 	var $inTd;
@@ -50,6 +83,7 @@
 		// References to the page elements
 		$form = $('form');
 		$msg = $('#msg');
+		$solution = $('#solution');
 		
 		// Reference to the input boxes
 		$inTmax = $('#tmax');
@@ -98,7 +132,13 @@
 				// Start solving
 				solution = SimulatedAnnealing.search(start);
 				
-				$msg.get(0).innerHTML = SimulatedAnnealing.numIter() + " iterations before finding a solution";
+				if (solution === false) {
+					$msg.get(0).innerHTML = "Couldn't solve the specified problem inside the given iteration limit";
+				} else {
+					renderSolution(solution);
+				
+					$msg.get(0).innerHTML = SimulatedAnnealing.numIter() + " iterations before finding a solution";
+				}
 			}	
 		});
 		
@@ -116,8 +156,8 @@
 	<div id="input-boxes">
 		<form>
 			<h2>Simulated Annealing</h2>
-			<label>Max temperature: 		<input type="text" id="tmax" value="0.30" /></label>
-			<label>Temperature degradation: <input type="tex" id="td" value="0.00001" /></label>	
+			<label>Max temperature: 		<input type="text" id="tmax" value="0.1" /></label>
+			<label>Temperature degradation: <input type="tex" id="td" value="0.01" /></label>	
 			<label>Target value: 			<input type="text" id="target" value="1" /></label>
 			<label># of neighbors: 			<input type="number" id="nodes" value="30" /></label>
 			
@@ -134,7 +174,6 @@
 	</div>
 	
 	<div id="solution">
-		<table></table>
 	</div>
 </body>
 </html>
