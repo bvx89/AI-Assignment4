@@ -35,9 +35,8 @@ var PuzzleGame = (function() {
 					if(board[i][y]==1)
 						countXdir++;
 				}
-				if(countXdir>K){
+				if(countXdir>K)
 					score-=(countXdir-K);
-				}
 			}
 
 			//CHECKS COLUMNS
@@ -48,9 +47,8 @@ var PuzzleGame = (function() {
 						countYdir++;
 					}
 				}
-				if(countYdir>K){
+				if(countYdir>K)
 					score-=(countYdir-K);
-				}
 			}
 			
 			//CHECKS DIAGONALS top-left --> bottom right
@@ -66,7 +64,7 @@ var PuzzleGame = (function() {
 			
 			for(var x=1; x<M; x++){
 				var countD=0; 
-				for(var y0; y<N-x; y++){
+				for(var y=0; y<N-x; y++){
 					if(board[x+y][y]==1)
 						countD++;
 				}
@@ -79,10 +77,24 @@ var PuzzleGame = (function() {
 			//CHECKS DIAGONALS top-right --> bottom left
 			for(var x=0; x<N; x++){
 				var countD=0;
-				
 
+				for(var y=0; y<N-x; y++){
+					if(board[x+y][y]==1)
+						countD++;
+				}
+				if(countD>K)
+					score-=(countD-K);
 			}
-			//TODO CHECK MORE SHIT
+			
+			for(var y=1; y<M; y++){
+				var countD=0;
+				for(var x=y; x<M; x++){
+					if(board[N-x][x]==1)
+						countD++;
+				}
+				if(countD>K)
+					score-=(countD-K);
+			}
 					
 			return score/maxScore;
 		},
